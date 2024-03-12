@@ -55,20 +55,24 @@ function displayNum(num){
     if(isOperatorExist() && strNum2.length <10){// display the second number input
         strNum2 += num;
         OP.textContent = `${operator} ${strNum2}`;
-    }else if(!EndResult  && strNum1.length <10){ //display the first number input
+        console.log("1");
+    }else if(!EndResult  && strNum1.length <10 && !isOperatorExist()){ //display the first number input
         strNum1 += num;
         // let tempDis = OP.textContent;
         OP.textContent = `${strNum1}`;
-        operator = null;
-    }else if(EndResult){ // display the end result after operation. if another num btn
+        // operator = null;
+        console.log("2"+operator)
+    }else if(EndResult && !isOperatorExist()){ // display the end result after operation. if another num btn
            // clicked (0-9), should function like new calculator 
+           EndResult = false;
         strNum1 = num;
         OP.textContent = `${strNum1}`;
         operator = null;
-        EndResult = false;
+        
         decimal = '';
+        console.log("3"+EndResult)
     }else{
-
+        console.log("4");
     }
     
 }
@@ -93,6 +97,10 @@ function displayDecimal(){
 }
 
 function equalResult(){
+     const whichButton = document.querySelectorAll(".btnOpe");
+    whichButton.forEach((button)=>{
+        button.classList.remove("clicked");
+    });
     if(strNum2){
         if(operator == '/' && strNum2 == 0){
             alert("Please don't divide by zero");
@@ -105,9 +113,15 @@ function equalResult(){
                  result = operate(operator, floatNum1, floatNum2).toFixed(2);
                  decimal = '.';
             }else{
+                
                 let intNum1 = parseInt(strNum1);
                 let intNum2 = parseInt(strNum2);
                  result = operate(operator, intNum1, intNum2);
+                 console.log(result - Math.floor(result) !== 0);
+                 if(result - Math.floor(result) !== 0){
+                    result = result.toFixed(2);
+                    
+                 }
             }
             
             if(result > 9999999999){
@@ -183,7 +197,9 @@ btnOpe.forEach((button)=>{
         if(isOperatorExist() || strNum1 === ''){
             console.log("cannot add operator");
         }else{
+            EndResult = false;
             displayOpe(button.textContent.toString());
+            button.classList.add("clicked");
         }
         //console.log(button.textContent.toString());
     });
@@ -232,7 +248,14 @@ document.addEventListener("keydown", (event) => {
             if(isOperatorExist() || strNum1 === ''){
                 console.log("cannot add operator");
             }else{
+                EndResult = false;
                 displayOpe(event.key);
+                btnOpe.forEach((button)=>{
+                    if(button.textContent == operator){
+                        button.classList.add("clicked");
+                    }
+                });
+                
             }
             break;
         case '.':
@@ -247,6 +270,7 @@ document.addEventListener("keydown", (event) => {
             break;
         case '=':
         case 'Enter':
+            
             equalResult();
             break;
     }
